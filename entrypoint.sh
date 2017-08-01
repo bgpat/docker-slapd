@@ -22,8 +22,6 @@ directory /var/lib/openldap/openldap-data
 index objectClass eq
 EOF
 
-cat /etc/openldap/slapd.conf
-
 cat << EOF > /etc/openldap/slapd.ldif
 dn: cn=config
 objectClass: olcGlobal
