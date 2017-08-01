@@ -1,0 +1,22 @@
+version: "3"
+services:
+  slapd:
+    build: .
+    ports:
+      - 389
+    env_file: .env
+    environment:
+      INITIALIZE_LDIF: |
+        dn: $PEOPLE_DN
+        objectClass: organizationalUnit
+        ou: People
+        
+        dn: uid=$USER_ID,$PEOPLE_DN
+        objectClass: account
+        objectClass: posixAccount
+        uid: $USER_ID
+        cn: $USER_ID
+        uidNumber: 1000
+        gidNumber: 1000
+        homeDirectory: /home/$USER_ID
+        userPassword: $USER_PASSWORD
