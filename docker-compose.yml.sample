@@ -1,7 +1,8 @@
 version: "3"
 services:
   slapd:
-    build: .
+    image: bgpat/slapd
+#   build: .
     ports:
       - 389
     env_file: .env
