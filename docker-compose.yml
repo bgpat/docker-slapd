@@ -1,0 +1,26 @@
+version: "3"
+services:
+  slapd:
+#   image: bgpat/slapd
+    build: .
+    ports:
+      - 389
+      - 636
+    env_file: .env
+    environment:
+#     CUSTOM_SCHEMA: |
+      INITIAL_LDIF: |
+        dn: ou=People,dc=domain,dc=tld
+        objectClass: organizationalUnit
+        ou: People
+      ACL: |
+        access to *
+          by anonymous auth
+          by * read
+        access to dn.children="ou=People,dc=domain,dc=tld"
+          by self write
+          by dn.subtree="ou=People,dc=domain,dc=tld" read
+        access to *
+          by dn.subtree="cn=Manager,dc=domain,dc=tld" manage
+#   volumes:
+#     - ./data:/var/lib/openldap/openldap-data

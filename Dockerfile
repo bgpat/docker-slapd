@@ -1,9 +1,8 @@
 FROM alpine:3.6
 
-RUN apk --update --no-cache add openldap openldap-clients
+RUN apk -U --no-cache add openldap
 COPY entrypoint.sh /entrypoint.sh
-COPY initialize.sh /initialize.sh
 
-EXPOSE 389
+EXPOSE 389 636
 
-CMD ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
