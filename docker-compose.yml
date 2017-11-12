@@ -1,8 +1,8 @@
 version: "3"
 services:
   slapd:
-#   image: bgpat/slapd
-    build: .
+    image: bgpat/slapd
+#   build: .
     ports:
       - 389
       - 636
