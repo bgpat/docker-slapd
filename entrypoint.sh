@@ -17,8 +17,8 @@ if ! slapcat > /dev/null 2>&1; then
 	done
 
 	cat << EOF >> /etc/openldap/slapd.conf
-database ${BACKEND}
-maxsize ${MAX_SIZE:-1073741824}
+database $BACKEND
+${MAX_SIZE:+"maxsize $MAX_SIZE"}
 suffix "$DOMAIN_SUFFIX"
 rootdn "$ROOT_DN"
 rootpw $ADMIN_PW
