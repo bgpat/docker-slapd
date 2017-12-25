@@ -17,8 +17,6 @@ if ! slapcat > /dev/null 2>&1; then
 	done
 
 	cat << EOF >> /etc/openldap/slapd.conf
-pidfile /var/run/openldap/slapd.pid
-argsfile /var/run/openldap/slapd.args
 database ${BACKEND}
 maxsize ${MAX_SIZE:-1073741824}
 suffix "$DOMAIN_SUFFIX"
