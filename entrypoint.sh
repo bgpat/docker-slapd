@@ -16,6 +16,10 @@ if ! slapcat > /dev/null 2>&1; then
 		echo "include /etc/openldap/schema/$s.schema" >> /etc/openldap/slapd.conf
 	done
 
+	for f in $(find /usr/lib/openldap -name '*.so'); do
+		echo "moduleload $f" >> /etc/openldap/slapd.conf
+	done
+
 	cat << EOF >> /etc/openldap/slapd.conf
 database $BACKEND
 ${MAX_SIZE:+"maxsize $MAX_SIZE"}
@@ -23,7 +27,6 @@ suffix "$DOMAIN_SUFFIX"
 rootdn "$ROOT_DN"
 rootpw $ADMIN_PW
 directory ${LDAP_DIRECTORY:-/var/lib/openldap/openldap-data}
-index objectClass eq
 password-hash $PASSWORD_HASH
 password-crypt-salt-format $PASSWORD_CRYPT_SALT_FORMAT
 ${TLS_CA_CERTIFICATE_FILE:+"TLSCACertificateFile $TLS_CA_CERTIFICATE_FILE"}
