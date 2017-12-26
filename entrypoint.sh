@@ -38,7 +38,7 @@ ${TLS_CERTIFICATE_KEY_FILE:+"TLSCertificateKeyFile $TLS_CERTIFICATE_KEY_FILE"}
 $ACL
 EOF
 
-if ! slapcat -c /etc/openldap/slapd.conf.new > /dev/null 2>&1; then
+if ! slapcat -f /etc/openldap/slapd.conf.new > /dev/null 2>&1; then
 	mv /etc/openldap/slapd.conf.new /etc/openldap/slapd.conf
 
 	cat << EOF > /etc/openldap/schema/custom.schema
