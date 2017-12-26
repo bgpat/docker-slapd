@@ -66,5 +66,7 @@ EOF
 	slapadd -l /etc/openldap/initial.ldif
 fi
 
+mkdir -p /run/openldap
+
 set -x
 /usr/sbin/slapd -d ${LOG_LEVEL:-256} -h 'ldap:/// ldaps:///'
