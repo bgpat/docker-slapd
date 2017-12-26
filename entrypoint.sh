@@ -5,22 +5,21 @@ set -e
 DOMAIN=${DOMAIN:-domain.tld}
 DOMAIN_SUFFIX="dc=`echo $DOMAIN | sed -e 's/\./,dc=/g'`"
 
-if ! slapcat -b $DOMAIN_SUFFIX > /dev/null 2>&1; then
-	ADMIN_CN=${ADMIN_CN:-Manager}
-	ROOT_DN="cn=$ADMIN_CN,$DOMAIN_SUFFIX"
-	PASSWORD_HASH=${PASSWORD_HASH:-'{CRYPT}'}
-	PASSWORD_CRYPT_SALT_FORMAT=${PASSWORD_CRYPT_SALT_FORMAT:-'"$1$%.8s"'}
+ADMIN_CN=${ADMIN_CN:-Manager}
+ROOT_DN="cn=$ADMIN_CN,$DOMAIN_SUFFIX"
+PASSWORD_HASH=${PASSWORD_HASH:-'{CRYPT}'}
+PASSWORD_CRYPT_SALT_FORMAT=${PASSWORD_CRYPT_SALT_FORMAT:-'"$1$%.8s"'}
 
-	cat /dev/null > /etc/openldap/slapd.conf
-	for s in ${SCHEMAS:-core}; do
-		echo "include /etc/openldap/schema/$s.schema" >> /etc/openldap/slapd.conf
-	done
+cat /dev/null > /etc/openldap/slapd.conf.new
+for s in ${SCHEMAS:-core}; do
+	echo "include /etc/openldap/schema/$s.schema" >> /etc/openldap/slapd.conf.new
+done
 
-	for f in $(find /usr/lib/openldap -name '*.so'); do
-		echo "moduleload $f" >> /etc/openldap/slapd.conf
-	done
+for f in $(find /usr/lib/openldap -name '*.so'); do
+	echo "moduleload $f" >> /etc/openldap/slapd.conf.new
+done
 
-	cat << EOF >> /etc/openldap/slapd.conf
+cat << EOF >> /etc/openldap/slapd.conf.new
 database $BACKEND
 ${MAX_SIZE:+"maxsize $MAX_SIZE"}
 suffix "$DOMAIN_SUFFIX"
@@ -34,6 +33,9 @@ ${TLS_CERTIFICATE_FILE:+"TLSCertificateFile $TLS_CERTIFICATE_FILE"}
 ${TLS_CERTIFICATE_KEY_FILE:+"TLSCertificateKeyFile $TLS_CERTIFICATE_KEY_FILE"}
 $ACL
 EOF
+
+if ! slapcat -c /etc/openldap/slapd.conf.new -b $DOMAIN_SUFFIX > /dev/null 2>&1; then
+	mv /etc/openldap/slapd.conf.new /etc/openldap/slapd.conf
 
 	cat << EOF > /etc/openldap/schema/custom.schema
 $CUSTOM_SCHEMA
