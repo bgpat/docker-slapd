@@ -10,21 +10,20 @@ ROOT_DN="cn=$ADMIN_CN,$DOMAIN_SUFFIX"
 PASSWORD_HASH=${PASSWORD_HASH:-'{CRYPT}'}
 PASSWORD_CRYPT_SALT_FORMAT=${PASSWORD_CRYPT_SALT_FORMAT:-'"$1$%.8s"'}
 
-if ! slapcat -s "$ROOT_DN" | grep '^dn:' ; then
-	cat /dev/null > /etc/openldap/slapd.conf
-	for s in ${SCHEMAS:-core}; do
-		f="include /etc/openldap/schema/$s.schema"
-		echo $f >> /etc/openldap/slapd.conf
-		if ! [ -e "$f" ]; then
-			touch $f
-		fi
-	done
+cat /dev/null > /etc/openldap/slapd.conf
+for s in ${SCHEMAS:-core}; do
+	f="include /etc/openldap/schema/$s.schema"
+	echo $f >> /etc/openldap/slapd.conf
+	if ! [ -e "$f" ]; then
+		touch $f
+	fi
+done
 
-	for f in $(find /usr/lib/openldap -name '*.so'); do
-		echo "moduleload $f" >> /etc/openldap/slapd.conf
-	done
+for f in $(find /usr/lib/openldap -name '*.so'); do
+	echo "moduleload $f" >> /etc/openldap/slapd.conf
+done
 
-	cat << EOF >> /etc/openldap/slapd.conf
+cat << EOF >> /etc/openldap/slapd.conf
 database $BACKEND
 ${MAX_SIZE:+"maxsize $MAX_SIZE"}
 suffix "$DOMAIN_SUFFIX"
@@ -39,6 +38,7 @@ ${TLS_CERTIFICATE_KEY_FILE:+"TLSCertificateKeyFile $TLS_CERTIFICATE_KEY_FILE"}
 $ACL
 EOF
 
+if ! slapcat -s "$ROOT_DN" | grep '^dn:' ; then
 	cat << EOF > /etc/openldap/schema/custom.schema
 $CUSTOM_SCHEMA
 EOF
