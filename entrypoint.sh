@@ -12,7 +12,11 @@ PASSWORD_CRYPT_SALT_FORMAT=${PASSWORD_CRYPT_SALT_FORMAT:-'"$1$%.8s"'}
 
 cat /dev/null > /etc/openldap/slapd.conf.new
 for s in ${SCHEMAS:-core}; do
-	echo "include /etc/openldap/schema/$s.schema" >> /etc/openldap/slapd.conf.new
+	f="include /etc/openldap/schema/$s.schema"
+	echo $f >> /etc/openldap/slapd.conf.new
+	if ! [ -e $f ]; then
+		touch $f
+	fi
 done
 
 for f in $(find /usr/lib/openldap -name '*.so'); do
@@ -34,7 +38,7 @@ ${TLS_CERTIFICATE_KEY_FILE:+"TLSCertificateKeyFile $TLS_CERTIFICATE_KEY_FILE"}
 $ACL
 EOF
 
-if ! slapcat -c /etc/openldap/slapd.conf.new -b $DOMAIN_SUFFIX > /dev/null 2>&1; then
+if ! slapcat -c /etc/openldap/slapd.conf.new > /dev/null 2>&1; then
 	mv /etc/openldap/slapd.conf.new /etc/openldap/slapd.conf
 
 	cat << EOF > /etc/openldap/schema/custom.schema
