@@ -10,7 +10,7 @@ ROOT_DN="cn=$ADMIN_CN,$DOMAIN_SUFFIX"
 PASSWORD_HASH=${PASSWORD_HASH:-'{CRYPT}'}
 PASSWORD_CRYPT_SALT_FORMAT=${PASSWORD_CRYPT_SALT_FORMAT:-'"$1$%.8s"'}
 
-if ! [ -e '/etc/openldap/slapd.conf' ]; then
+if ! slapcat -s "$ROOT_DN" | grep '^dn:' ; then
 	cat /dev/null > /etc/openldap/slapd.conf
 	for s in ${SCHEMAS:-core}; do
 		f="include /etc/openldap/schema/$s.schema"
