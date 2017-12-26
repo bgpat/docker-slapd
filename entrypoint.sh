@@ -5,7 +5,7 @@ set -e
 DOMAIN=${DOMAIN:-domain.tld}
 DOMAIN_SUFFIX="dc=`echo $DOMAIN | sed -e 's/\./,dc=/g'`"
 
-if ! slapcat > /dev/null 2>&1; then
+if ! slapcat -b $DOMAIN_SUFFIX > /dev/null 2>&1; then
 	ADMIN_CN=${ADMIN_CN:-Manager}
 	ROOT_DN="cn=$ADMIN_CN,$DOMAIN_SUFFIX"
 	PASSWORD_HASH=${PASSWORD_HASH:-'{CRYPT}'}
