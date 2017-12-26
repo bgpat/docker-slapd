@@ -14,7 +14,7 @@ cat /dev/null > /etc/openldap/slapd.conf.new
 for s in ${SCHEMAS:-core}; do
 	f="include /etc/openldap/schema/$s.schema"
 	echo $f >> /etc/openldap/slapd.conf.new
-	if ! [ -e $f ]; then
+	if ! [ -e "$f" ]; then
 		touch $f
 	fi
 done
