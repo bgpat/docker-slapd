@@ -38,10 +38,11 @@ ${TLS_CERTIFICATE_KEY_FILE:+"TLSCertificateKeyFile $TLS_CERTIFICATE_KEY_FILE"}
 $ACL
 EOF
 
-if ! slapcat -s "$ROOT_DN" | grep '^dn:' ; then
-	cat << EOF > /etc/openldap/schema/custom.schema
+cat << EOF > /etc/openldap/schema/custom.schema
 $CUSTOM_SCHEMA
 EOF
+
+if ! slapcat -s "$ROOT_DN" | grep '^dn:' ; then
 
 	cat << EOF > /etc/openldap/initial.ldif
 dn: $DOMAIN_SUFFIX
